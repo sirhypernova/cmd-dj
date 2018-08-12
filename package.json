@@ -1,6 +1,6 @@
 {
   "name": "cmd-dj",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Bot Framework for discord.js",
   "main": "index.js",
   "scripts": {
