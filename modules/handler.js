@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { Collection } = require('discord.js');
 
-class CMDHandler {
+class ModuleHandler {
     constructor(dj) {
         this.dj = dj;
         this._modules = {};
@@ -68,4 +68,4 @@ class CMDHandler {
     }
 }
 
-module.exports = CMDHandler;
+module.exports = ModuleHandler;
