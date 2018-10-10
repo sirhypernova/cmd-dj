@@ -3,8 +3,9 @@ class Command {
         this._dj = data.dj;
         this._name = data.name;
         this._roles = data.roles;
+        this.checks = data.checks;
         this._handler = data.handler;
-        this._falseHandler = data.falseHandler;
+        this._checkFail = data.checkFail;
         this._usage = data.usage;
         this._help = data.help;
         this._path = data.path;
@@ -27,8 +28,8 @@ class Command {
             this._handler(message,args,this._dj);
     }
     
-    falseRun(message,args) {
-        this._falseHandler(message,args,this._dj);
+    checkFail(message,args,errors) {
+        this._checkFail(message,args,this._dj,errors);
     }
     
     get usage() {

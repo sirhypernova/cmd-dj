@@ -10,12 +10,11 @@ class CMDHandler {
     }
     
     async add(cmdconf) {
-        await this.dj.dj.defer();
         var { name } = cmdconf;
-        var roles = cmdconf.roles || ['everyone'];
+        var checks = cmdconf.checks || [];
         var { handler } = cmdconf;
         var onLoad = cmdconf.onLoad || function () {};
-        var falseHandler = cmdconf.falseHandler || function () {};
+        var checkFail = cmdconf.checkFail || function () {};
         var usage = cmdconf.usage || 'None Provided';
         var help = cmdconf.help || 'None Provided';
         var path = cmdconf.path || false;
@@ -24,9 +23,9 @@ class CMDHandler {
         
         if (!this.exists(name)) return this._commands[name] = new command({
             name: name,
-            roles: roles,
+            checks: checks,
             handler: handler,
-            falseHandler: falseHandler,
+            checkFail: checkFail,
             subCommands: subCommands,
             path: path,
             onLoad: onLoad,
@@ -126,8 +125,6 @@ class CMDHandler {
     }
     
     async parseContent(content) {
-        await this.dj.dj.defer();
-        await this.dj.roles.defer();
         var prefix = this.dj.dj.get('prefix');
         var argsRegex = this.dj.dj.get('argsRegex') || / +/g;
         
@@ -140,19 +137,18 @@ class CMDHandler {
         return {args: args, cmd: cmd};
     }
     
-    canRun(id,cmdroles) {
-        var roles = this.dj.roles.get(id);
-        if (roles == undefined) {
-            roles = [];
-            var owners = this.dj.dj.get('owners');
-            if (owners.includes(id)) roles.push('owner');
-            roles.push('everyone');
-            this.dj.roles.set(id,roles);
-        }
-        if (cmdroles.filter(role => roles.includes(role)).length || roles.includes('owner'))
-            return true;
-        else
-            return false;
+    canRun(msg,args,cmd) {
+        if (!cmd.checks.length) return true;
+        var errors = {};
+        cmd.checks.forEach((name) => {
+            if (!this.dj.checks.exists(name)) return;
+            var check = this.dj.checks.get(name);
+            
+            if (check.check(msg,args,this.dj) !== true) errors[name] = check.error;
+        });
+        
+        
+        return Object.keys(errors).length ? errors : true;
     }
     
     ready() {
@@ -164,7 +160,8 @@ class CMDHandler {
             var data = await this.parseContent(msg.content);
             if (!data) return;
             var cmd = this.get(data.cmd);
-            if (!this.canRun(msg.author.id,cmd._roles)) return cmd.falseRun(msg,data.args) || false;
+            var errors = this.canRun(msg,data.args,cmd);
+            if (errors !== true) return cmd.checkFail(msg,data.args,errors) || false;
             cmd.run(msg,data.args);
         });
     }

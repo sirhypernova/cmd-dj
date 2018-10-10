@@ -31,6 +31,10 @@ class Module extends require('events') {
     scanCommands(directory) {
         return this.dj.commands.scan(directory,this);
     }
+    
+    scanChecks(directory) {
+        return this.dj.checks.scan(directory,this._name);
+    }
 }
 
 module.exports = Module;

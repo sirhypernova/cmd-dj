@@ -29,7 +29,6 @@ var dj = new Client({
 
 dj.commands.add({
     name: 'ping', // The name of the command, used in this example `dj!ping`
-    roles: ['everyone'], // Allows everyone to use it
     help: 'Displays bot and api ping', // Help information - WIP,
     usage: '{prefix}ping', // Usage information - WIP
     // The handler gets run when a user runs a command, given they have proper permissions
@@ -39,9 +38,6 @@ dj.commands.add({
     },
     onLoad: function (command) { // Command is the command object
         command.data.something = 'nice'; // Data can be used during multiple runs
-    },
-    falseHandler: function (msg,args,dj) {
-        // This is ran when a user does not have the required roles to run the command
     }
 })
 
@@ -53,11 +49,16 @@ dj.run().then(() => {
 });
 ```
 
-## Documentation
+## Core Documentation
 
 ### `dj.run()`
 #### Start the bot
 Returns a `Promise` that resolves when the bot is ready, or rejects if there is an error.
+
+## Modules Documentation
+### _Coming soon_
+
+## Commands Documentation
 
 ### `dj.commands.add(data)`
 #### Add a new command
@@ -65,14 +66,15 @@ Returns a `Promise` that resolves when the bot is ready, or rejects if there is 
 
 ***Required***
 
-`name`: The name of the command, triggered on `prefix`+name
+`name`: The name of the command, triggered on `prefix`+name (not required if using scan)
 
 `handler`: The function that is run when the command is triggered, and valid roles exist. The function is run with 3 arguments: `message (Message)`,`arguments (array)`, and the client
 
+***Optional***
 
-`roles`: An array of required roles needed to run the command. Roles are **global**
+`checks`: An array of checks needed to run the command.
 
-`falseRun`: The function that is run when the command is triggered, but the user does not have the required roles. The function has the same arguments as handler.
+`checkFail`: The function that is run when the command is triggered and one or more checks do not return true. The function has the same arguments as handler, in addition to `errors (object)`.
 
 `onLoad`: The function that is run when the command is loaded. The function has one argument: `command (Command)`
 
@@ -84,7 +86,7 @@ Returns a `Promise` that resolves when the bot is ready, or rejects if there is 
 ```js
 dj.commands.add({
     name: 'ping',
-    roles: ['everyone'],
+    checks: ['dj.owner'],
     help: 'Displays bot and api ping',
     usage: '{prefix}ping',
     
@@ -95,8 +97,8 @@ dj.commands.add({
     onLoad: function (command) {
         command.data.something = 'nice';
     },
-    falseHandler: function (msg,args,dj) {
-        
+    checkFail: function (msg,args,dj,errors) {
+        console.log(errrors);
     }
 })
 ```
@@ -135,9 +137,9 @@ dj.commnads.removeWhere((command, name) => {
 #### Exactly like removeWhere, but removes all commands where the function returns true.
 **Example:**
 ```js
-// Remove all commands that everyone can use
+// Remove all commands that owners can use
 dj.commnads.removeAllWhere((command, name) => {
-   return command._roles.includes('everyone');
+   return command._checks.includes('dj.owner');
 });
 ```
 
@@ -164,4 +166,54 @@ dj.commands.reloadDir('commands');
 ```js
 dj.commands.exists('ping');
 // Returns true
+```
+
+## Checks Documentation
+### `dj.checks.add(data)`
+
+*Data Parameters*
+
+***Required***
+
+`name`: The name of the command, triggered on `prefix`+name (Not required if using scan)
+
+`check`: The function that is run when the command is triggered, and valid roles exist. The function is run with 3 arguments: `message (Message)`,`arguments (array)`, and the client
+
+***Optional***
+
+`error`: The error message when the check does not evaluate to true
+
+**Example:**
+```js
+{
+    name: 'owner',
+    error: 'Author is not an owner',
+    check(msg,args,dj) {
+        return dj.dj.get('owners').includes(msg.author.id);
+    }
+}
+```
+
+### `dj.checks.scan(folder,base)`
+#### Scans a folder and loads the commands
+
+*Parameters*
+
+***Required***
+
+`folder`: The folder to scan
+
+***Optional***
+
+`base`: The base of the check name. Default to folder + name
+
+**Example:**
+```js
+dj.checks.scan('checks');
+// Or
+dj.checks.scan('checks','cool')
+//
+// Example, if a file is named 'test.js' in the folder 'checks'
+// If there is no base specified, the check name would be 'checks.test'
+// iF the base is 'cool', the check name would be 'cool.test'
 ```

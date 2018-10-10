@@ -1,8 +1,7 @@
-const pcol = require('p-col');
-const pcolSQLite = require('pcol-sqlite');
+const { Collection } = require('discord.js');
 
-class Conf extends pcol {
-    constructor(db,conf = []) {
+class Conf extends Collection {
+    constructor(conf = []) {
         if (conf != [] && conf.constructor.name != 'Array') {
             var newconf = [];
             for (var key in conf) {
@@ -11,12 +10,7 @@ class Conf extends pcol {
             conf = newconf;
         }
         
-        if (typeof db == 'string') {
-            var dbname = db;
-            db = new pcolSQLite(dbname);
-        }
-        
-        super(db,conf);
+        super(conf);
     }
 }
 
