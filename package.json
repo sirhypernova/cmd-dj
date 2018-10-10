@@ -1,12 +1,14 @@
 {
   "name": "cmd-dj",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Bot Framework for discord.js",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "SirHyperNova",
+  "homepage": "https://github.com/sirhypernova/cmd-dj",
+  "respository": "github:sirhypernova/cmd-dj",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.3.2",
