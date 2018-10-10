@@ -4,7 +4,7 @@ Bot Framework for discord.js
 ***Documentation is a work-in-progress, and does not yet contain all features***
 
 ## Getting Started
-*This package has only been tested in NodeJS v8*
+*This package has only been tested in NodeJS v8-v10*
 ```sh
 npm install cmd-dj
 ```
