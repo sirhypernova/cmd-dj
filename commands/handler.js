@@ -127,9 +127,22 @@ class CMDHandler {
     async parseContent(content) {
         var prefix = this.dj.dj.get('prefix');
         var argsRegex = this.dj.dj.get('argsRegex') || / +/g;
+        var args;
         
-        if (!content.startsWith(prefix)) return false;
-        var args = content.slice(prefix.length).split(argsRegex);
+        if (prefix instanceof Array) {
+            var realPrefix = '';
+            for (var str of prefix) {
+                if (!content.startsWith(str)) continue;
+                realPrefix = str;
+                break;
+            }
+            if (!realPrefix.length) return false;
+            args = content.slice(realPrefix.length).split(argsRegex);
+        } else {
+            if (!content.startsWith(prefix)) return false;
+            args = content.slice(prefix.length).split(argsRegex);
+        }
+        
         var cmd = args.shift(1);
         
         if (!this.exists(cmd)) return false;

@@ -12,8 +12,7 @@ npm install cmd-dj
 ## Example Bot
 ```js
 // Main bot file
-const { ClientCore } = require('cmd-dj');
-const { Client } = ClientCore;
+const { Client } = require('./cmd-dj');
 
 var dj = new Client({
     token: 'YOUR TOKEN',
@@ -48,6 +47,10 @@ dj.run().then(() => {
    console.log(e);
 });
 ```
+
+## Recent Changes
+- Added checks system
+- Support for multiple prefixes, using an array. **Ex**: `['dj!','@']`
 
 ## Core Documentation
 
