@@ -101,7 +101,7 @@ dj.commands.add({
         command.data.something = 'nice';
     },
     checkFail: function (msg,args,dj,errors) {
-        console.log(errrrs);
+        console.log(errors);
     }
 })
 ```
