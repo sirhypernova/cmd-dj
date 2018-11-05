@@ -3,6 +3,8 @@ Bot Framework for discord.js
 
 ***Documentation is a work-in-progress, and does not yet contain all features***
 
+Here is an [example bot](https://github.com/sirhypernova/cmd-dj-example) showing off some of the features of cmd-dj
+
 ## Getting Started
 *This package has only been tested in NodeJS v8-v10*
 ```sh
