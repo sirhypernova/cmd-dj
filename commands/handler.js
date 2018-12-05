@@ -153,11 +153,17 @@ class CMDHandler {
     canRun(msg,args,cmd) {
         if (!cmd.checks.length) return true;
         var errors = {};
-        cmd.checks.forEach((name) => {
+        cmd.checks.forEach(async (name) => {
             if (!this.dj.checks.exists(name)) return;
             var check = this.dj.checks.get(name);
-            
-            if (check.check(msg,args,this.dj) !== true) errors[name] = check.error;
+            var result = check.check(msg,args,this.dj);
+            var can = false;
+            if (result instanceof Promise) {
+                can = await result;
+            } else {
+                can = result;
+            }
+            if (can !== true) errors[name] = check.error;
         });
         
         
@@ -173,7 +179,7 @@ class CMDHandler {
             var data = await this.parseContent(msg.content);
             if (!data) return;
             var cmd = this.get(data.cmd);
-            var errors = this.canRun(msg,data.args,cmd);
+            var errors = await this.canRun(msg,data.args,cmd);
             if (errors !== true) return cmd.checkFail(msg,data.args,errors) || false;
             cmd.run(msg,data.args);
         });
