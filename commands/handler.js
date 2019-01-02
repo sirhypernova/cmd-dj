@@ -138,6 +138,7 @@ class CMDHandler {
         var argsRegex = this.dj.dj.get('argsRegex') || / +/g;
         var args;
 
+        var currentPrefix = false;
         if (prefix instanceof Array) {
             var realPrefix = '';
             for (var str of prefix) {
@@ -146,9 +147,11 @@ class CMDHandler {
                 break;
             }
             if (!realPrefix.length) return false;
+            currentPrefix = realPrefix;
             args = content.slice(realPrefix.length).split(argsRegex);
         } else {
             if (!content.startsWith(prefix)) return false;
+            currentPrefix = prefix;
             args = content.slice(prefix.length).split(argsRegex);
         }
 
@@ -157,7 +160,7 @@ class CMDHandler {
         let exists = this.exists(cmd);
         if (!exists) return false;
 
-        return {args: args, cmd: cmd, realCmd: exists || false};
+        return {args: args, cmd: cmd, realCmd: exists || false, currentPrefix};
     }
 
     exists(command) {
@@ -199,6 +202,7 @@ class CMDHandler {
             var cmd = data.realCmd ? data.realCmd : this.get(data.cmd);
             var errors = await this.canRun(msg,data.args,cmd);
             if (errors !== true) return cmd.checkFail(msg,data.args,errors) || false;
+            msg.currentPrefix = data.currentPrefix;
             cmd.run(msg,data.args);
         });
     }
