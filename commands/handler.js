@@ -7,6 +7,7 @@ class CMDHandler {
     constructor(dj) {
         this.dj = dj;
         this._commands = {};
+        this._collection = null;
     }
     
     async add(cmdconf) {
@@ -20,29 +21,34 @@ class CMDHandler {
         var path = cmdconf.path || false;
         var module = cmdconf.module || false;
         var subCommands = cmdconf.subCommands || {};
+        var aliases = cmdconf.aliases || [];
         
         if (!this.exists(name)) return this._commands[name] = new command({
-            name: name,
-            checks: checks,
-            handler: handler,
-            checkFail: checkFail,
-            subCommands: subCommands,
-            path: path,
-            onLoad: onLoad,
-            usage: usage,
-            help: help,
+            name,
+            checks,
+            handler,
+            checkFail,
+            subCommands,
+            path,
+            onLoad,
+            usage,
+            help,
             dj: this.dj,
-            module: module
+            module,
+            aliases
         });
+        if (this._collection !== null) this._collection = null;
     }
     
     remove(name) {
+        if (this._collection !== null) this._collection = null;
         if (this.exists(name)) {
             delete this._commands[name];
         }
     }
     
     removeWhere(fn) {
+        if (this._collection !== null) this._collection = null;
         for (var key in this._commands) {
             if (fn(this._commands[key],key)) {
                 delete this._commands[key];
@@ -52,6 +58,7 @@ class CMDHandler {
     }
     
     removeAllWhere(fn) {
+        if (this._collection !== null) this._collection = null;
         for (var key in this._commands) {
             if (fn(this._commands[key],key)) {
                 delete this._commands[key];
@@ -61,6 +68,7 @@ class CMDHandler {
     
     reload(command) {
         if (!this.exists(command)) return false;
+        if (this._collection !== null) this._collection = null;
         var cmd = this.get(command);
         if (!cmd._path) return false;
         delete require.cache[require.resolve(cmd._path)];
@@ -69,6 +77,7 @@ class CMDHandler {
         var rcmd = require(cmd._path);
         rcmd.name = cmd._name;
         rcmd.path = cmd._path;
+        rcmd.module = cmd.module;
         this.add(rcmd).then(() => {
             this.get(command)._onLoad(this.get(command));
         })
@@ -99,7 +108,10 @@ class CMDHandler {
                       var cmd = require(path.resolve(dir,name));
                       cmd.name = name;
                       cmd.path = path.resolve(dir,name);
-                      cmd.module = module;
+                      if (module) {
+                          cmd.module = module;
+                          module._modifier(cmd);
+                      }
                       this.add(cmd);
                    });
                    resolve();
@@ -113,22 +125,19 @@ class CMDHandler {
     }
     
     get collection() {
+        if (this._collection !== null) return this._collection;
         var array = [];
-        for (var key in this._commands) {
+        for (let key in this._commands) {
             array.push([key,this._commands[key]]);
         }
-        return new Collection(array);
-    }
-    
-    exists(command) {
-        return this._commands.hasOwnProperty(command);
+        return this._collection = new Collection(array);
     }
     
     async parseContent(content) {
         var prefix = this.dj.dj.get('prefix');
         var argsRegex = this.dj.dj.get('argsRegex') || / +/g;
         var args;
-        
+
         if (prefix instanceof Array) {
             var realPrefix = '';
             for (var str of prefix) {
@@ -142,14 +151,23 @@ class CMDHandler {
             if (!content.startsWith(prefix)) return false;
             args = content.slice(prefix.length).split(argsRegex);
         }
-        
-        var cmd = args.shift(1);
-        
-        if (!this.exists(cmd)) return false;
-        
-        return {args: args, cmd: cmd};
+
+        var cmd = args.shift();
+
+        let exists = this.exists(cmd);
+        if (!exists) return false;
+
+        return {args: args, cmd: cmd, realCmd: exists || false};
     }
-    
+
+    exists(command) {
+        if (this._commands.hasOwnProperty(command)) {
+            return true;
+        } else {
+            return this.collection.find(cmd => cmd.aliases.includes(command));
+        }
+    }
+
     canRun(msg,args,cmd) {
         if (!cmd.checks.length) return true;
         var errors = {};
@@ -178,7 +196,7 @@ class CMDHandler {
             if (msg.author.bot) return;
             var data = await this.parseContent(msg.content);
             if (!data) return;
-            var cmd = this.get(data.cmd);
+            var cmd = data.realCmd ? data.realCmd : this.get(data.cmd);
             var errors = await this.canRun(msg,data.args,cmd);
             if (errors !== true) return cmd.checkFail(msg,data.args,errors) || false;
             cmd.run(msg,data.args);

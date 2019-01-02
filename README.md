@@ -14,7 +14,7 @@ npm install cmd-dj
 ## Example Bot
 ```js
 // Main bot file
-const { Client } = require('./cmd-dj');
+const { Client } = require('cmd-dj');
 
 var dj = new Client({
     token: 'YOUR TOKEN',
@@ -53,6 +53,8 @@ dj.run().then(() => {
 ## Recent Changes
 - Added checks system
 - Support for multiple prefixes, using an array. **Ex**: `['dj!','@']`
+- Command Aliases: Simply add an array of aliases to your command
+- Command Modifiers: Modules can now modify commands when they are loaded. Documentation coming soon..
 
 ## Core Documentation
 

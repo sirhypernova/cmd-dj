@@ -13,8 +13,9 @@ class ModuleHandler {
         var { name } = modconf;
         var onLoad = modconf.onLoad || function () {};
         var events = modconf.events || {};
+        var modifier = modconf.modifier || function (m) {return m};
         
-        if (!this.exists(name)) return this._modules[name] = new djmodule({name: name, events: events, dj: this.dj});
+        if (!this.exists(name)) return this._modules[name] = new djmodule({name, events, modifier, dj: this.dj});
     }
     
     scan(directory) {

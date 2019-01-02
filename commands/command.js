@@ -11,6 +11,7 @@ class Command {
         this._path = data.path;
         this._onLoad = data.onLoad;
         this._subCommands = data.subCommands;
+        this.aliases = data.aliases;
         this.module = data.module;
         this.data = {};
         

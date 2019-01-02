@@ -5,6 +5,7 @@ class Module extends require('events') {
         this._name = data.name;
         this._events = data.events;
         this._loaded = true;
+        this._modifier = data.modifier;
         this.data = {};
     }
     
