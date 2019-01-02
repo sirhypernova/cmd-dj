@@ -53,6 +53,8 @@ dj.run().then(() => {
 ## Recent Changes
 - Added checks system
 - Support for multiple prefixes, using an array. **Ex**: `['dj!','@']`
+
+*Examples of these can be found in the [example bot](https://github.com/sirhypernova/cmd-dj-example)*
 - Command Aliases: Simply add an array of aliases to your command
 - Command Modifiers: Modules can now modify commands when they are loaded. Documentation coming soon..
 
