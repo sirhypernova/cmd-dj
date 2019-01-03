@@ -11,6 +11,7 @@ class CMDHandler {
     }
     
     async add(cmdconf) {
+        if (this._collection !== null) this._collection = null;
         var { name } = cmdconf;
         var checks = cmdconf.checks || [];
         var { handler } = cmdconf;
@@ -37,7 +38,6 @@ class CMDHandler {
             module,
             aliases
         });
-        if (this._collection !== null) this._collection = null;
     }
     
     remove(name) {
@@ -160,7 +160,7 @@ class CMDHandler {
         let exists = this.exists(cmd);
         if (!exists) return false;
 
-        return {args: args, cmd: cmd, realCmd: exists || false, currentPrefix};
+        return {args: args, cmd: cmd, realCmd: exists, currentPrefix};
     }
 
     exists(command) {
@@ -199,7 +199,7 @@ class CMDHandler {
             if (msg.author.bot) return;
             var data = await this.parseContent(msg.content);
             if (!data) return;
-            var cmd = data.realCmd ? data.realCmd : this.get(data.cmd);
+            var cmd = data.realCmd instanceof require('./command') ? data.realCmd : this.get(data.cmd);
             var errors = await this.canRun(msg,data.args,cmd);
             if (errors !== true) return cmd.checkFail(msg,data.args,errors) || false;
             msg.currentPrefix = data.currentPrefix;
