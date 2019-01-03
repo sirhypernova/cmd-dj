@@ -58,6 +58,9 @@ dj.run().then(() => {
 - Command Aliases: Simply add an array of aliases to your command
 - Command Modifiers: Modules can now modify commands when they are loaded. Documentation coming soon..
 
+## Official Modules
+- [Permissions](https://npmjs.com/cmd-dj-perms) - Add simple permission checks for your bot
+
 ## Core Documentation
 
 ### `dj.run()`
