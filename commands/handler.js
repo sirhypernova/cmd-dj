@@ -125,7 +125,7 @@ class CMDHandler {
     }
     
     get collection() {
-        if (this._collection !== null) return this._collection;
+        if (this._collection !== null && Object.keys(this._commands).length == this._collection.size) return this._collection;
         var array = [];
         for (let key in this._commands) {
             array.push([key,this._commands[key]]);
@@ -156,7 +156,7 @@ class CMDHandler {
         }
 
         var cmd = args.shift();
-
+        if (this._collection !== null) this._collection = null;
         let exists = this.exists(cmd);
         if (!exists) return false;
 
