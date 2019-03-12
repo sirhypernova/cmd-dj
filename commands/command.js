@@ -24,7 +24,7 @@ class Command {
     
     run(message,args) {
         if (args[0] && args[0] in this._subCommands)
-            this._subCommands[args[0]](message,args.slice(1),this._dj)
+            this._subCommands[args[0]].bind(this)(message,args.slice(1),this._dj)
         else
             this._handler(message,args,this._dj);
     }
