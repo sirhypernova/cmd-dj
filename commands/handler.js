@@ -175,7 +175,7 @@ class CMDHandler {
         cmd.checks.forEach(async (name) => {
             if (!this.dj.checks.exists(name)) return;
             var check = this.dj.checks.get(name);
-            var result = check.check(msg,args,this.dj);
+            var result = check.check(msg,args,this.dj,cmd);
             var can = false;
             if (result instanceof Promise) {
                 can = await result;
