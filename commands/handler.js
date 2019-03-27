@@ -78,9 +78,7 @@ class CMDHandler {
         rcmd.name = cmd._name;
         rcmd.path = cmd._path;
         rcmd.module = cmd.module;
-        this.add(rcmd).then(() => {
-            this.get(command)._onLoad(this.get(command));
-        })
+        this.add(rcmd);
         return true;
     }
     
