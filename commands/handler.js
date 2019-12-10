@@ -176,7 +176,7 @@ class CMDHandler {
   async canRun(msg, args, cmd) {
     if (!cmd.checks.length) return true;
     var errors = {};
-    for (let name of checks) {
+    for (let name of cmd.checks) {
       if (!this.dj.checks.exists(name)) return;
       var check = this.dj.checks.get(name);
       var result = check.check(msg, args, this.dj, cmd);
