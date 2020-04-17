@@ -7,8 +7,8 @@ module.exports = class Arguments {
     /** @type {Object.<String,parserFunction>} */
     this.parsers = require("./defaultParsers");
 
-    this.validRegex = /^(<(?:[A-Za-z]+\??)(?:(?: |\|)[A-Za-z]+)*> ?)+(?<! )$/;
-    this.parseRegex = /<([A-Za-z]+\??)((?:(?: |\|)[A-Za-z]+)*)>/g;
+    this.validRegex = /^(<(?:[A-Za-z0-9]+\??)(?:(?: |\|)[A-Za-z0-9]+)*> ?)+(?<! )$/;
+    this.parseRegex = /<([A-Za-z0-9]+\??)((?:(?: |\|)[A-Za-z0-9]+)*)>/g;
   }
 
   validate(args) {
