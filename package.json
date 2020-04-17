@@ -1,0 +1,29 @@
+{
+  "name": "cmd-dj",
+  "version": "2.0.0",
+  "description": "Bot Framework for Discord.js",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sirhypernova/cmd-dj.git"
+  },
+  "keywords": [
+    "discord",
+    "discord bot",
+    "discord bot library",
+    "discord bot commands",
+    "discord.js"
+  ],
+  "author": "SirHyperNova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sirhypernova/cmd-dj/issues"
+  },
+  "homepage": "https://github.com/sirhypernova/cmd-dj#readme",
+  "dependencies": {
+    "discord.js": "^12.0.1"
+  }
+}
