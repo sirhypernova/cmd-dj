@@ -1,5 +1,6 @@
 const { Message } = require("discord.js");
 const { Client } = require("..");
+const ReactionMenu = require("../utilities/reactionMenu");
 
 module.exports = class CommandContext {
   /**
@@ -17,5 +18,13 @@ module.exports = class CommandContext {
       .replace(this.prefix + command, "")
       .trim()
       .split(/ +/);
+  }
+
+  /**
+   * Create a reaction menu
+   * @param {Message} msg
+   */
+  createReactionMenu(msg) {
+    return new ReactionMenu(this, msg);
   }
 };
