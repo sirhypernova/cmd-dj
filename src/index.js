@@ -1,11 +1,9 @@
-module.exports = {
-  Client: require("./client"),
-  Command: require("./commands/command"),
-  CommandContext: require("./commands/context"),
-  CommandHandler: require("./commands/handler"),
-  CommandArguments: require("./commands/arguments"),
-  Module: require("./modules/module"),
-  ModuleHandler: require("./modules/handler"),
-  Check: require("./checks/check"),
-  CheckHandler: require("./checks/handler"),
-};
+export { default as Client } from "./client/index.js";
+export { default as Command } from "./commands/command.js";
+export { default as CommandContext } from "./commands/context.js";
+export { default as CommandHandler } from "./commands/handler.js";
+export { default as CommandArguments } from "./commands/arguments.js";
+export { default as Module } from "./modules/module.js";
+export { default as ModuleHandler } from "./modules/handler.js";
+export { default as Check } from "./checks/check.js";
+export { default as CheckHandler } from "./checks/handler.js";

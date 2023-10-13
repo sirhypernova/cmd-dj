@@ -1,19 +1,19 @@
-const { Message } = require("discord.js");
-const { Client } = require("..");
-const ReactionMenu = require("../utilities/reactionMenu");
+import { Message } from "discord.js";
+import { Client } from "../index.js";
+import ReactionMenu from "../utilities/reactionMenu.js";
 
-module.exports = class CommandContext {
+export default class CommandContext {
   /**
    * @param {Client} client
    * @param {Message} msg
    * @param {String} command
    */
-  constructor(client, msg, command) {
+  constructor(client, msg, command, usedPrefix) {
     this.msg = msg;
     this.client = client;
     this.command = command;
 
-    this.prefix = client.prefix(msg);
+    this.prefix = usedPrefix ?? client.prefix(msg);
     this.rawArgs = msg.content
       .replace(this.prefix + command, "")
       .trim()
@@ -27,4 +27,4 @@ module.exports = class CommandContext {
   createReactionMenu(msg) {
     return new ReactionMenu(this, msg);
   }
-};
+}

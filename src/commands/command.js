@@ -1,6 +1,6 @@
-const { Client, CommandContext, Module, Check } = require("..");
+import { Client, CommandContext, Module, Check } from "../index.js";
 
-module.exports = class Command {
+export default class Command {
   /**
    * Command base class
    * @param {Client} client
@@ -74,4 +74,4 @@ module.exports = class Command {
   usageMessage(ctx) {
     return ctx.msg.channel.send(`Usage: \`${this.usage(ctx)}\``);
   }
-};
+}

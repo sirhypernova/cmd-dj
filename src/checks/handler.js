@@ -1,10 +1,10 @@
-const { Client, Command, CommandContext } = require("..");
-const Check = require("./check");
-const path = require("path");
-const fs = require("fs");
-const { Collection } = require("discord.js");
+import { Client, Command, CommandContext } from "../index.js";
+import Check from "./check.js";
+import { resolve as _resolve } from "path";
+import { stat, readdir } from "fs";
+import { Collection } from "discord.js";
 
-module.exports = class ChecksHandler {
+export default class ChecksHandler {
   /**
    * Checks handler
    * @param {Client} client
@@ -34,14 +34,14 @@ module.exports = class ChecksHandler {
    */
   scan(directory) {
     return new Promise((resolve, reject) => {
-      var dir = path.resolve(directory);
-      fs.stat(dir, (err) => {
+      var dir = _resolve(directory);
+      stat(dir, (err) => {
         if (err) return reject("Invalid Path");
-        fs.readdir(dir, (err, files) => {
+        readdir(dir, (err, files) => {
           if (err) return reject(err);
-          files.forEach((file) => {
+          files.forEach(async (file) => {
             if (!file.endsWith(".js")) return;
-            var check = require(path.resolve(dir, file));
+            var check = (await import(_resolve(dir, file))).default;
             this.add(check);
           });
           resolve();
@@ -61,7 +61,7 @@ module.exports = class ChecksHandler {
       if (!this.exists(check)) continue;
       let result = this.get(check).test(ctx);
       if (result instanceof Promise) result = await result;
-      if (!result) return check.name;
+      if (!result) return check;
     }
     return true;
   }
@@ -99,7 +99,7 @@ module.exports = class ChecksHandler {
     }
     return (this._collection = new Collection(array));
   }
-};
+}
 
 class OwnerCheck extends Check {
   constructor(client) {

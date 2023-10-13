@@ -1,10 +1,10 @@
-const { Client } = require("..");
-const Module = require("./module");
-const path = require("path");
-const fs = require("fs");
-const { Collection } = require("discord.js");
+import { Client } from "../index.js";
+import Module from "./module.js";
+import { resolve as _resolve } from "path";
+import { existsSync, stat, readdir } from "fs";
+import { Collection } from "discord.js";
 
-module.exports = class ModuleHandler {
+export default class ModuleHandler {
   /**
    * Command handler
    * @param {Client} client
@@ -55,7 +55,7 @@ module.exports = class ModuleHandler {
     if (this._collection !== null) this._collection = null;
     let mod = this.get(module);
     if (!mod.fileLocation) return false;
-    if (!fs.existsSync(mod.fileLocation)) return false;
+    if (!existsSync(mod.fileLocation)) return false;
     /** @type {Module} */
     let newModule;
     try {
@@ -76,15 +76,15 @@ module.exports = class ModuleHandler {
    */
   scan(directory) {
     return new Promise((resolve, reject) => {
-      var dir = path.resolve(directory);
-      fs.stat(dir, (err) => {
+      var dir = _resolve(directory);
+      stat(dir, (err) => {
         if (err) return reject("Invalid Path");
-        fs.readdir(dir, (err, files) => {
+        readdir(dir, (err, files) => {
           if (err) return reject(err);
-          files.forEach((file) => {
+          files.forEach(async (file) => {
             if (!file.endsWith(".js")) return;
-            var mod = require(path.resolve(dir, file));
-            this.add(mod, { location: path.resolve(dir, file) });
+            var mod = (await import(_resolve(dir, file))).default;
+            this.add(mod, { location: _resolve(dir, file) });
           });
           resolve();
         });
@@ -127,18 +127,20 @@ module.exports = class ModuleHandler {
   }
 
   async loadModules() {
-    let toLoad = this.collection
-      .filter(
-        (mod) =>
-          !mod.loaded &&
-          (mod.loadPosition == null ||
-            ["ready", "after"].includes(mod.loadPosition))
-      )
-      .array();
+    let toLoad = [
+      ...this.collection
+        .filter(
+          (mod) =>
+            !mod.loaded &&
+            (mod.loadPosition == null ||
+              ["ready", "after"].includes(mod.loadPosition))
+        )
+        .values(),
+    ];
 
     for (let mod of toLoad) {
       let onLoad = mod._onLoad();
       if (onLoad instanceof Promise) await onLoad;
     }
   }
-};
+}

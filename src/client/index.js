@@ -1,10 +1,10 @@
-const { Client, Message } = require("discord.js");
-const CommandHandler = require("../commands/handler");
-const ModuleHandler = require("../modules/handler");
-const ChecksHandler = require("../checks/handler");
-const CommandArguments = require("../commands/arguments");
+import { Client, Message } from "discord.js";
+import CommandHandler from "../commands/handler.js";
+import ModuleHandler from "../modules/handler.js";
+import ChecksHandler from "../checks/handler.js";
+import CommandArguments from "../commands/arguments.js";
 
-module.exports = class DJClient extends Client {
+export default class DJClient extends Client {
   constructor(discord = {}) {
     super(discord);
 
@@ -65,7 +65,7 @@ module.exports = class DJClient extends Client {
   }
 
   enableInlineCommands(suffix = "~") {
-    this.addMiddleware("message", (msg) => {
+    this.addMiddleware("messageCreate", (msg) => {
       if (!msg.content.endsWith(suffix)) return msg;
       let potentialCommand = msg.content.split("`");
       if (potentialCommand.length < 3) return msg;
@@ -115,4 +115,4 @@ module.exports = class DJClient extends Client {
       super.login(this.config.token);
     });
   }
-};
+}

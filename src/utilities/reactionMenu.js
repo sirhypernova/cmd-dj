@@ -1,7 +1,7 @@
-const { CommandContext } = require("..");
-const { Message } = require("discord.js");
+import { CommandContext } from "../index.js";
+import { Message } from "discord.js";
 
-module.exports = class ReactionMenu {
+export default class ReactionMenu {
   /**
    * @param {CommandContext} ctx
    * @param {Message} message
@@ -57,11 +57,16 @@ module.exports = class ReactionMenu {
     this.idleTimeout = idleTimeout;
     return new Promise(async (res) => {
       for (let emoji of this.emojis) {
+        // if (/^[0-9]{17,19}$/.test(reaction))
+        if (/^[0-9]{17,19}$/.test(emoji))
+          emoji = this.ctx.client.emojis.cache.get(emoji);
         await this.message.react(emoji);
       }
       const filter = (reaction, user) =>
         user.id == this.ctx.msg.author.id &&
-        this.emojis.includes(reaction.emoji.name);
+        this.emojis.includes(
+          reaction.emoji.guild ? reaction.emoji.id : reaction.emoji.name
+        );
       const collector = (this.collector = this.message.createReactionCollector(
         filter,
         {
@@ -72,7 +77,7 @@ module.exports = class ReactionMenu {
       ));
       collector.on("collect", (r) => {
         r.users.remove(this.ctx.msg.author);
-        this.handlers[r.emoji.name]();
+        this.handlers[r.emoji.guild ? r.emoji.id : r.emoji.name]();
       });
       collector.on("end", (col, reason) => {
         res(reason);
@@ -81,4 +86,4 @@ module.exports = class ReactionMenu {
       this.started = true;
     });
   }
-};
+}

@@ -1,7 +1,8 @@
-const { Client } = require("..");
-const path = require("path");
+import { Client } from "../index.js";
+import { EventEmitter } from "events";
+import path from "path";
 
-module.exports = class Module extends require("events").EventEmitter {
+export default class Module extends EventEmitter {
   /**
    * Module base class
    * @param {Client} client
@@ -48,4 +49,4 @@ module.exports = class Module extends require("events").EventEmitter {
   scanCommands(directory = null) {
     this.client.commands.scan(directory, this);
   }
-};
+}

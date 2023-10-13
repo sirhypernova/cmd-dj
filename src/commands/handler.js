@@ -1,11 +1,11 @@
-const { Client, Module } = require("..");
-const Command = require("../commands/command");
-const CommandContext = require("../commands/context");
-const path = require("path");
-const fs = require("fs");
-const { Collection } = require("discord.js");
+import { Client, Module } from "../index.js";
+import Command from "../commands/command.js";
+import CommandContext from "../commands/context.js";
+import { resolve as _resolve } from "path";
+import { existsSync, stat, readdir } from "fs";
+import { Collection } from "discord.js";
 
-module.exports = class CommandHandler {
+export default class CommandHandler {
   /**
    * Command handler
    * @param {Client} client
@@ -16,15 +16,16 @@ module.exports = class CommandHandler {
     this.aliases = {};
     this._collection = null;
 
-    client.on("message", async (msg) => {
+    client.on("messageCreate", async (msg) => {
       if (msg.author.bot || msg.author.system) return;
       let cmdName;
       const prefix = client.prefix(msg);
+      let usedPrefix = prefix;
       if (prefix instanceof Array) {
-        let realPrefix;
+        let realPrefix = "";
         for (let str of prefix) {
-          if (!content.startsWith(str)) continue;
-          realPrefix = str;
+          if (!msg.content.startsWith(str)) continue;
+          usedPrefix = realPrefix = str;
           break;
         }
         if (!realPrefix.length) return;
@@ -33,11 +34,10 @@ module.exports = class CommandHandler {
         if (!msg.content.startsWith(prefix)) return;
         cmdName = msg.content.slice(prefix.length).split(/ +/)[0];
       }
-
       if (!this.exists(cmdName)) return;
       const cmd = this.get(cmdName);
       // TODO: checks - maybe do with middleware
-      const ctx = new CommandContext(client, msg, cmdName);
+      const ctx = new CommandContext(client, msg, cmdName, usedPrefix);
       if (cmd.args.length) {
         const args = await this.client.arguments.getArgs(ctx);
         if (args.valid === false) {
@@ -123,7 +123,7 @@ module.exports = class CommandHandler {
     if (this._collection !== null) this._collection = null;
     let cmd = this.get(command);
     if (!cmd.fileLocation) return false;
-    if (!fs.existsSync(cmd.fileLocation)) return false;
+    if (!existsSync(cmd.fileLocation)) return false;
     /** @type {Command} */
     let newCommand;
     try {
@@ -147,15 +147,15 @@ module.exports = class CommandHandler {
    */
   scan(directory, module = false) {
     return new Promise((resolve, reject) => {
-      var dir = path.resolve(directory);
-      fs.stat(dir, (err) => {
+      var dir = _resolve(directory);
+      stat(dir, (err) => {
         if (err) return reject("Invalid Path");
-        fs.readdir(dir, (err, files) => {
+        readdir(dir, (err, files) => {
           if (err) return reject(err);
-          files.forEach((file) => {
+          files.forEach(async (file) => {
             if (!file.endsWith(".js")) return;
-            var cmd = require(path.resolve(dir, file));
-            this.add(cmd, { location: path.resolve(dir, file), module });
+            var cmd = (await import(_resolve(dir, file))).default;
+            this.add(cmd, { location: _resolve(dir, file), module });
           });
           resolve();
         });
@@ -201,4 +201,4 @@ module.exports = class CommandHandler {
     }
     return (this._collection = new Collection(array));
   }
-};
+}

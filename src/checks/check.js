@@ -1,6 +1,6 @@
-const { Client } = require("..");
+import { Client } from "../index.js";
 
-module.exports = class Check {
+export default class Check {
   /**
    * Check base class
    * @param {Client} client
@@ -15,4 +15,4 @@ module.exports = class Check {
    * @param {CommandContext} ctx
    */
   test(ctx) {}
-};
+}

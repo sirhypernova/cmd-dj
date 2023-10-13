@@ -1,8 +1,9 @@
 {
   "name": "cmd-dj",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "Bot Framework for Discord.js",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +25,10 @@
   },
   "homepage": "https://github.com/sirhypernova/cmd-dj#readme",
   "dependencies": {
-    "discord.js": "^12.0.1"
+    "discord.js": "^14.13.0",
+    "zlib-sync": "^0.1.8"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
   }
 }
